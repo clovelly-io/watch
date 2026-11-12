@@ -1,0 +1,81 @@
+# Clovelly Watch's runner on AWS, beside a verifier you already run there (the sandbox SDK
+# repository's AWS recipe): one ECS Fargate service from the published image, behind a target
+# group of a load balancer you already have that terminates HTTPS for GitHub's webhooks
+# (https://YOUR-HOST/github/REPO_ID). The verifier's recipe is not edited. Not yet run.
+#
+#   aws cloudformation deploy --template-file runner/deploy/aws.yaml --stack-name watch-runner \
+#     --capabilities CAPABILITY_IAM --parameter-overrides RunnerImage=... Cluster=... Subnets=... \
+#     SecurityGroup=... TargetGroupArn=... ConfigSecretArn=... ApiKeySecretArn=... \
+#     VerifierTokenSecretArn=... ControlPlaneUrl=...
+#
+# ConfigSecretArn is a Secrets Manager secret holding, base64, a tar.gz of what
+# `clovelly-watch-runner init` wrote with runner-token beside it.
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Clovelly Watch runner (customer-held mode)
+Parameters:
+  RunnerImage: { Type: String, Description: "The published runner image, by digest" }
+  Cluster: { Type: String, Description: "An ECS cluster name or ARN" }
+  Subnets: { Type: "List<AWS::EC2::Subnet::Id>" }
+  SecurityGroup: { Type: "AWS::EC2::SecurityGroup::Id", Description: "Allows 8090 from the load balancer only" }
+  TargetGroupArn: { Type: String, Description: "A target group (IP, port 8090, health check /healthz) of your HTTPS load balancer" }
+  ConfigSecretArn: { Type: String }
+  ApiKeySecretArn: { Type: String, Description: "A read_write API key of your environment" }
+  VerifierTokenSecretArn: { Type: String, Description: "Your verifier's SDK token" }
+  ControlPlaneUrl: { Type: String }
+  ControlPlaneCa: { Type: String, Default: "" }
+Resources:
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement: [{ Effect: Allow, Principal: { Service: ecs-tasks.amazonaws.com }, Action: sts:AssumeRole }]
+      ManagedPolicyArns: [arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy]
+      Policies:
+        - PolicyName: read-the-runners-secrets
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: [!Ref ConfigSecretArn, !Ref ApiKeySecretArn, !Ref VerifierTokenSecretArn]
+  Logs:
+    Type: AWS::Logs::LogGroup
+    Properties: { LogGroupName: /clovelly/watch-runner, RetentionInDays: 30 }
+  Task:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: watch-runner
+      RequiresCompatibilities: [FARGATE]
+      NetworkMode: awsvpc
+      Cpu: "512"
+      Memory: "1024"
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      RuntimePlatform: { CpuArchitecture: X86_64, OperatingSystemFamily: LINUX }
+      ContainerDefinitions:
+        - Name: runner
+          Image: !Ref RunnerImage
+          PortMappings: [{ ContainerPort: 8090 }]
+          EntryPoint: [sh, -c]
+          Command:
+            - mkdir -p /config && printf '%s' "$CONFIG_TGZ" | base64 -d | tar -xzf - -C /config && unset CONFIG_TGZ && exec clovelly-watch-runner serve /config/config.json
+          Environment:
+            - { Name: CLOVELLY_API_URL, Value: !Ref ControlPlaneUrl }
+            - { Name: CLOVELLY_API_CA, Value: !Ref ControlPlaneCa }
+          Secrets:
+            - { Name: CONFIG_TGZ, ValueFrom: !Ref ConfigSecretArn }
+            - { Name: CLOVELLY_API_TOKEN, ValueFrom: !Ref ApiKeySecretArn }
+            - { Name: CLOVELLY_VERIFIER_TOKEN, ValueFrom: !Ref VerifierTokenSecretArn }
+          LogConfiguration:
+            LogDriver: awslogs
+            Options: { awslogs-group: !Ref Logs, awslogs-region: !Ref "AWS::Region", awslogs-stream-prefix: runner }
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition: !Ref Task
+      NetworkConfiguration:
+        AwsvpcConfiguration: { Subnets: !Ref Subnets, SecurityGroups: [!Ref SecurityGroup], AssignPublicIp: ENABLED }
+      LoadBalancers: [{ ContainerName: runner, ContainerPort: 8090, TargetGroupArn: !Ref TargetGroupArn }]

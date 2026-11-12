@@ -1,0 +1,7 @@
+**/.venv
+**/node_modules
+**/.ruff_cache
+**/__pycache__
+**/*.egg-info
+**/build
+.git

@@ -1,0 +1,31 @@
+# Clovelly Watch's runner beside a verifier you already run (the sandbox SDK repository's
+# deploy/compose.yaml): add this file to the same project, so the runner reaches your
+# verifier on its network and nothing else changes in the verifier's recipe.
+#
+#   docker compose -f clovelly/deploy/compose.yaml -f watch/runner/deploy/compose.yaml up -d
+#
+#   RUNNER_IMAGE       the published runner image, by digest
+#   WATCH_CONFIG       the directory `clovelly-watch-runner init` wrote (config.json and the
+#                      secrets beside it); its environment.verifier_url is your verifier's
+#                      https address, as your SDKs use it, and listen is 0.0.0.0:8090
+#   CLOVELLY_API_URL, CLOVELLY_API_TOKEN, CLOVELLY_API_CA
+#                      the control plane, as for any program using the sandbox SDK
+#   CLOVELLY_VERIFIER_TOKEN
+#                      your verifier's SDK token
+#
+# Your TLS terminator forwards GitHub's webhook deliveries (https://YOUR-HOST/github/REPO)
+# to 127.0.0.1:8090. The runner needs no other inbound traffic.
+services:
+  watch-runner:
+    image: ${RUNNER_IMAGE:?set RUNNER_IMAGE to the published runner image, by digest}
+    platform: linux/amd64
+    restart: always
+    environment:
+      CLOVELLY_API_URL: ${CLOVELLY_API_URL:?}
+      CLOVELLY_API_TOKEN: ${CLOVELLY_API_TOKEN:?}
+      CLOVELLY_API_CA: ${CLOVELLY_API_CA:-}
+      CLOVELLY_VERIFIER_TOKEN: ${CLOVELLY_VERIFIER_TOKEN:?}
+    volumes:
+      - ${WATCH_CONFIG:?set WATCH_CONFIG to the directory init wrote}:/config:ro
+    ports:
+      - "127.0.0.1:8090:8090"

@@ -1,0 +1,557 @@
+{
+ "description": "An alert job's outcomes (crates/watch/API.md, 'Outcomes'; the result file is the same object with \"kind\": \"alert\") and whether they are accepted; a refusal names the field. Watch's parser and the runner's both pass these. The runner takes only these four outcomes from a session; failed and budget_spent are its own.",
+ "cases": [
+  {
+   "name": "noise, the monitor kept",
+   "outcome": {
+    "outcome": "noise",
+    "monitor": "keep"
+   },
+   "ok": true
+  },
+  {
+   "name": "noise, nothing said keeps it",
+   "outcome": {
+    "outcome": "noise"
+   },
+   "ok": true
+  },
+  {
+   "name": "noise, the monitor muted",
+   "outcome": {
+    "outcome": "noise",
+    "monitor": "mute"
+   },
+   "ok": true
+  },
+  {
+   "name": "noise, the monitor deleted",
+   "outcome": {
+    "outcome": "noise",
+    "monitor": "delete"
+   },
+   "ok": true
+  },
+  {
+   "name": "noise, the monitor replaced",
+   "outcome": {
+    "outcome": "noise",
+    "monitor": {
+     "replace": {
+      "name": "refunds-5xx",
+      "source": {
+       "pr": 12,
+       "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "file": "app.py",
+       "function": "create_refund"
+      },
+      "signal": {
+       "request": {
+        "route": "/refunds",
+        "method": "POST",
+        "status_class": "5xx"
+       }
+      },
+      "condition": {
+       "ratio_over": 0.2
+      },
+      "window_minutes": 10
+     }
+    }
+   },
+   "ok": true
+  },
+  {
+   "name": "already fixed at the head",
+   "outcome": {
+    "outcome": "already_fixed",
+    "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "head_position": 42
+   },
+   "ok": true
+  },
+  {
+   "name": "an issue",
+   "outcome": {
+    "outcome": "issue",
+    "number": 7
+   },
+   "ok": true
+  },
+  {
+   "name": "a fix pull request with its gate",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": true
+  },
+  {
+   "name": "a gate of several tests",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_a.py",
+      "tests/test_b.py"
+     ],
+     "failed_exit": 7
+    }
+   },
+   "ok": true
+  },
+  {
+   "name": "an outcome that does not exist",
+   "outcome": {
+    "outcome": "fixed"
+   },
+   "ok": false,
+   "field": "outcome"
+  },
+  {
+   "name": "no outcome",
+   "outcome": {
+    "number": 7
+   },
+   "ok": false,
+   "field": "outcome"
+  },
+  {
+   "name": "noise with free text",
+   "outcome": {
+    "outcome": "noise",
+    "monitor": "keep",
+    "reason": "it was a load test"
+   },
+   "ok": false,
+   "field": "reason"
+  },
+  {
+   "name": "noise naming an action that does not exist",
+   "outcome": {
+    "outcome": "noise",
+    "monitor": "silence"
+   },
+   "ok": false,
+   "field": "monitor"
+  },
+  {
+   "name": "a replacement with an extra field",
+   "outcome": {
+    "outcome": "noise",
+    "monitor": {
+     "replace": {
+      "name": "refunds-5xx",
+      "source": {
+       "pr": 12,
+       "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "file": "app.py",
+       "function": "create_refund"
+      },
+      "signal": {
+       "request": {
+        "route": "/refunds",
+        "method": "POST",
+        "status_class": "5xx"
+       }
+      },
+      "condition": {
+       "ratio_over": 0.2
+      },
+      "window_minutes": 10,
+      "note": "free text"
+     }
+    }
+   },
+   "ok": false,
+   "field": "monitor.replace.note"
+  },
+  {
+   "name": "a replacement whose name is not a slug",
+   "outcome": {
+    "outcome": "noise",
+    "monitor": {
+     "replace": {
+      "name": "Refunds 5xx",
+      "source": {
+       "pr": 12,
+       "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "file": "app.py",
+       "function": "create_refund"
+      },
+      "signal": {
+       "request": {
+        "route": "/refunds",
+        "method": "POST",
+        "status_class": "5xx"
+       }
+      },
+      "condition": {
+       "ratio_over": 0.2
+      },
+      "window_minutes": 10
+     }
+    }
+   },
+   "ok": false,
+   "field": "monitor.replace.name"
+  },
+  {
+   "name": "already fixed without the head's position",
+   "outcome": {
+    "outcome": "already_fixed",
+    "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "ok": false,
+   "field": "head_position"
+  },
+  {
+   "name": "already fixed at a negative position",
+   "outcome": {
+    "outcome": "already_fixed",
+    "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "head_position": -1
+   },
+   "ok": false,
+   "field": "head_position"
+  },
+  {
+   "name": "already fixed at a short SHA",
+   "outcome": {
+    "outcome": "already_fixed",
+    "head_sha": "abc1234",
+    "head_position": 3
+   },
+   "ok": false,
+   "field": "head_sha"
+  },
+  {
+   "name": "an issue without its number",
+   "outcome": {
+    "outcome": "issue"
+   },
+   "ok": false,
+   "field": "number"
+  },
+  {
+   "name": "an issue numbered 0",
+   "outcome": {
+    "outcome": "issue",
+    "number": 0
+   },
+   "ok": false,
+   "field": "number"
+  },
+  {
+   "name": "an issue number as a string",
+   "outcome": {
+    "outcome": "issue",
+    "number": "7"
+   },
+   "ok": false,
+   "field": "number"
+  },
+  {
+   "name": "an issue with a title",
+   "outcome": {
+    "outcome": "issue",
+    "number": 7,
+    "title": "Refunds fail"
+   },
+   "ok": false,
+   "field": "title"
+  },
+  {
+   "name": "a pull request without a gate",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8
+   },
+   "ok": false,
+   "field": "gate"
+  },
+  {
+   "name": "a pull request with free text",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 1
+    },
+    "body": "Fixes the refunds"
+   },
+   "ok": false,
+   "field": "body"
+  },
+  {
+   "name": "a gate whose tests passed on the deployed commit",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 0
+    }
+   },
+   "ok": false,
+   "field": "gate.failed_exit"
+  },
+  {
+   "name": "a gate whose exit status is out of range",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 256
+    }
+   },
+   "ok": false,
+   "field": "gate.failed_exit"
+  },
+  {
+   "name": "a gate whose tests errored at collection (pytest's 2), which shows no bug",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 2
+    }
+   },
+   "ok": false,
+   "field": "gate.failed_exit"
+  },
+  {
+   "name": "a gate whose tests timed out (124), which shows no bug",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 124
+    }
+   },
+   "ok": false,
+   "field": "gate.failed_exit"
+  },
+  {
+   "name": "a gate whose tests were killed (128 and up), which shows no bug",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 137
+    }
+   },
+   "ok": false,
+   "field": "gate.failed_exit"
+  },
+  {
+   "name": "a gate with no tests",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.tests"
+  },
+  {
+   "name": "a gate whose test is under .github/",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      ".github/workflows/ci.yml"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.tests.0"
+  },
+  {
+   "name": "a gate whose test is under .clovelly/",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      ".clovelly/watch.toml"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.tests.0"
+  },
+  {
+   "name": "a gate whose test leaves the repository",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/../../etc/passwd"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.tests.0"
+  },
+  {
+   "name": "a gate whose test is an absolute path",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "/job/repo/tests/test_a.py"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.tests.0"
+  },
+  {
+   "name": "a gate whose test path holds a space",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test a.py"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.tests.0"
+  },
+  {
+   "name": "a gate naming a test twice",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_a.py",
+      "tests/test_a.py"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.tests.1"
+  },
+  {
+   "name": "a gate with an extra field",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 1,
+     "passed": true
+    }
+   },
+   "ok": false,
+   "field": "gate.passed"
+  },
+  {
+   "name": "a gate with a short deployed SHA",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "abc",
+     "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.deployed_sha"
+  },
+  {
+   "name": "a gate with no head SHA",
+   "outcome": {
+    "outcome": "pr",
+    "number": 8,
+    "gate": {
+     "deployed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "tests": [
+      "tests/test_refunds.py"
+     ],
+     "failed_exit": 1
+    }
+   },
+   "ok": false,
+   "field": "gate.head_sha"
+  }
+ ]
+}

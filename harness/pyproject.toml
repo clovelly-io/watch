@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clovelly-watch-harness"
+version = "0.1.0"
+description = "Clovelly Watch's harness: runs one job inside a sandbox with the Claude Agent SDK, pointed at Watch's model gateway"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+# The Agent SDK is the harness (SPEC-watch.md, Decided). Its Python code is MIT; the Claude
+# Code binary its wheel bundles is under Anthropic's Commercial Terms (BLOCKERS.md, phase 18).
+# The closed schemas are the runner's, so the harness checks a result exactly as the runner
+# will before writing it.
+dependencies = ["claude-agent-sdk==0.2.180", "clovelly-watch-runner==0.1.0"]
+
+[project.scripts]
+clovelly-watch-harness = "clovelly_watch_harness.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "BLE"]

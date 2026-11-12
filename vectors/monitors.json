@@ -1,0 +1,1490 @@
+{
+ "description": "Monitor drafts and whether the schema (docs/watch-monitors.md) accepts them; a refusal names the field and the problem. Watch's parser and the runner's both pass these.",
+ "cases": [
+  {
+   "name": "the spec's example",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "request with count_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/a",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "count_over": 3
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "request with ratio_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/a",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.5
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "request with p95_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/a",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "p95_over": 250
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "request with absent",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/a",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "absent": true
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "outbound with count_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "outbound": {
+      "host": "api.stripe.com",
+      "method": "POST",
+      "status_class": "4xx"
+     }
+    },
+    "condition": {
+     "count_over": 3
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "outbound with ratio_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "outbound": {
+      "host": "api.stripe.com",
+      "method": "POST",
+      "status_class": "4xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.5
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "outbound with p95_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "outbound": {
+      "host": "api.stripe.com",
+      "method": "POST",
+      "status_class": "4xx"
+     }
+    },
+    "condition": {
+     "p95_over": 250
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "outbound with absent",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "outbound": {
+      "host": "api.stripe.com",
+      "method": "POST",
+      "status_class": "4xx"
+     }
+    },
+    "condition": {
+     "absent": true
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "error with count_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "error": {
+      "type": "ValueError"
+     }
+    },
+    "condition": {
+     "count_over": 3
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "error with ratio_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "error": {
+      "type": "ValueError"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.5
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.ratio_over",
+   "problem": "condition_does_not_fit_signal"
+  },
+  {
+   "name": "error with p95_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "error": {
+      "type": "ValueError"
+     }
+    },
+    "condition": {
+     "p95_over": 250
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.p95_over",
+   "problem": "condition_does_not_fit_signal"
+  },
+  {
+   "name": "error with absent",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "error": {
+      "type": "ValueError"
+     }
+    },
+    "condition": {
+     "absent": true
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.absent",
+   "problem": "condition_does_not_fit_signal"
+  },
+  {
+   "name": "log with count_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "log": {
+      "level": "warning",
+      "logger": "billing"
+     }
+    },
+    "condition": {
+     "count_over": 3
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "log with ratio_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "log": {
+      "level": "warning",
+      "logger": "billing"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.5
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.ratio_over",
+   "problem": "condition_does_not_fit_signal"
+  },
+  {
+   "name": "log with p95_over",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "log": {
+      "level": "warning",
+      "logger": "billing"
+     }
+    },
+    "condition": {
+     "p95_over": 250
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.p95_over",
+   "problem": "condition_does_not_fit_signal"
+  },
+  {
+   "name": "log with absent",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "log": {
+      "level": "warning",
+      "logger": "billing"
+     }
+    },
+    "condition": {
+     "absent": true
+    },
+    "window_minutes": 10
+   },
+   "ok": true
+  },
+  {
+   "name": "colour = \"red\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10,
+    "colour": "red"
+   },
+   "ok": false,
+   "field": "colour",
+   "problem": "unknown_field"
+  },
+  {
+   "name": "state = \"armed\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10,
+    "state": "armed"
+   },
+   "ok": false,
+   "field": "state",
+   "problem": "unknown_field"
+  },
+  {
+   "name": "fix = null",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10,
+    "fix": null
+   },
+   "ok": false,
+   "field": "fix",
+   "problem": "unknown_field"
+  },
+  {
+   "name": "source.branch = \"main\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook",
+     "branch": "main"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.branch",
+   "problem": "unknown_field"
+  },
+  {
+   "name": "signal.request.query = \"x\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx",
+      "query": "x"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.request.query",
+   "problem": "unknown_field"
+  },
+  {
+   "name": "signal = {\"trace\": {}}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "trace": {}
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.trace",
+   "problem": "unknown_field"
+  },
+  {
+   "name": "signal = {\"request\": {\"route\": \"/a\"}, \"error\": {}}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/a"
+     },
+     "error": {}
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal",
+   "problem": "not_one_of"
+  },
+  {
+   "name": "condition = {\"mean_over\": 3}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "mean_over": 3
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.mean_over",
+   "problem": "unknown_field"
+  },
+  {
+   "name": "window_minutes = 0",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 0
+   },
+   "ok": false,
+   "field": "window_minutes",
+   "problem": "out_of_range"
+  },
+  {
+   "name": "window_minutes = 61",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 61
+   },
+   "ok": false,
+   "field": "window_minutes",
+   "problem": "out_of_range"
+  },
+  {
+   "name": "window_minutes = 2.5",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 2.5
+   },
+   "ok": false,
+   "field": "window_minutes",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "window_minutes = true",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": true
+   },
+   "ok": false,
+   "field": "window_minutes",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "name = \"Refund_5xx\"",
+   "monitor": {
+    "name": "Refund_5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "name",
+   "problem": "not_a_slug"
+  },
+  {
+   "name": "name = \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+   "monitor": {
+    "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "name",
+   "problem": "not_a_slug"
+  },
+  {
+   "name": "name = \"-a\"",
+   "monitor": {
+    "name": "-a",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "name",
+   "problem": "not_a_slug"
+  },
+  {
+   "name": "name = \"a--b\"",
+   "monitor": {
+    "name": "a--b",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "name",
+   "problem": "not_a_slug"
+  },
+  {
+   "name": "name = \"the secrets are here\"",
+   "monitor": {
+    "name": "the secrets are here",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "name",
+   "problem": "not_a_slug"
+  },
+  {
+   "name": "name = 5",
+   "monitor": {
+    "name": 5,
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "name",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "source.merge_sha = \"abc\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "abc",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.merge_sha",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "source.merge_sha = \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.merge_sha",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "source.pr = 0",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 0,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.pr",
+   "problem": "out_of_range"
+  },
+  {
+   "name": "source.pr = \"412\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": "412",
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.pr",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "source.file = \"a b.py\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "a b.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.file",
+   "problem": "bad_text"
+  },
+  {
+   "name": "source.file = \"caf\\u00e9.py\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "caf\u00e9.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.file",
+   "problem": "bad_text"
+  },
+  {
+   "name": "source.file = \"\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.file",
+   "problem": "bad_text"
+  },
+  {
+   "name": "source.file = (absent)",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "source.file",
+   "problem": "missing"
+  },
+  {
+   "name": "signal.request.route = \"/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.request.route",
+   "problem": "bad_text"
+  },
+  {
+   "name": "signal.request.route = \"refund\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.request.route",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "signal.request.method = \"FETCH\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "FETCH",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.request.method",
+   "problem": "not_one_of"
+  },
+  {
+   "name": "signal.request.status_class = \"500\"",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "500"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.request.status_class",
+   "problem": "not_one_of"
+  },
+  {
+   "name": "signal.request.status_class = (absent)",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.request.status_class",
+   "problem": "required_by_condition"
+  },
+  {
+   "name": "condition = {\"ratio_over\": 1.0}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": 1.0
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.ratio_over",
+   "problem": "out_of_range"
+  },
+  {
+   "name": "condition = {\"ratio_over\": \"0.5\"}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "ratio_over": "0.5"
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.ratio_over",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "condition = {\"p95_over\": 0}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "p95_over": 0
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.p95_over",
+   "problem": "out_of_range"
+  },
+  {
+   "name": "condition = {\"p95_over\": 600001}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "p95_over": 600001
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.p95_over",
+   "problem": "out_of_range"
+  },
+  {
+   "name": "condition = {\"absent\": false}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "absent": false
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.absent",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "condition = {\"count_over\": -1}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "count_over": -1
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.count_over",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "condition = {\"count_over\": 1.5}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "count_over": 1.5
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition.count_over",
+   "problem": "wrong_type"
+  },
+  {
+   "name": "condition = {\"count_over\": 3, \"absent\": true}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "request": {
+      "route": "/webhooks/refund",
+      "method": "POST",
+      "status_class": "5xx"
+     }
+    },
+    "condition": {
+     "count_over": 3,
+     "absent": true
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "condition",
+   "problem": "not_one_of"
+  },
+  {
+   "name": "signal = {\"error\": {}}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "error": {}
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.error",
+   "problem": "empty"
+  },
+  {
+   "name": "signal = {\"log\": {\"logger\": \"x\"}}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "log": {
+      "logger": "x"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.log.level",
+   "problem": "missing"
+  },
+  {
+   "name": "signal = {\"log\": {\"level\": \"info\"}}",
+   "monitor": {
+    "name": "refund-webhook-5xx",
+    "source": {
+     "pr": 412,
+     "merge_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "file": "billing/refunds.py",
+     "function": "handle_webhook"
+    },
+    "signal": {
+     "log": {
+      "level": "info"
+     }
+    },
+    "condition": {
+     "ratio_over": 0.05
+    },
+    "window_minutes": 10
+   },
+   "ok": false,
+   "field": "signal.log.level",
+   "problem": "not_one_of"
+  }
+ ]
+}

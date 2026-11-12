@@ -1,0 +1,7 @@
+{
+ "_comment": "A hosted GitHub token as Watch seals it (crates/watch, hosted::seal) and the runner opens it (payload.open_hosted). A test key; the plaintext is not a token.",
+ "plaintext": "github_pat_secret",
+ "private": "cwsk1_FtJV8wmoan5ImEsmAl5Dkk2guyIQErAds_IvMCmO7Tg",
+ "public": "cwk1_BKBPsZ1h5zVyTEjc2yQqZPoPJk9WFwUj-P2rvTSo675zeE0Rw5ZsgleZIJKRWdoc0WykzpbjhcBjwja2deEE0ns",
+ "sealed": "cwh1_BEA9dXLUgJBfNooU9LZNIKRIe0atUHrnOSDtfqP_muqAoxAqYHQygtYDBiTXQENkYqq5GCCObYbxCysqlx5wsXxqVlWjVcpTnfo4FK32jAxuWXxfmwNctV17htd641a68cc"
+}
