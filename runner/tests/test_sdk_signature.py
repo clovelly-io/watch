@@ -1,8 +1,8 @@
 """The runner's call to the sandbox SDK against the real SDK's signature (the fix round's A3): the
 fake environment in ``test_runner`` takes anything, so this binds the keyword arguments the runner
 passes to ``clovelly.Environment.sandbox`` itself. Skipped where the SDK is not importable;
-``tests/watch/run.sh phase20`` runs it against the tree's own SDK. The runner still needs the SDK
-release after 0.6.0, which sends the cell its placement pass; that is not a signature."""
+``tests/watch/run.sh phase20`` runs it against the tree's own SDK. The runner pins the SDK release
+0.7.0, the first that sends the cell its placement pass."""
 
 from __future__ import annotations
 

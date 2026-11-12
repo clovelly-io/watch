@@ -13,7 +13,7 @@ dependencies = ["cryptography==45.0.7"]
 [project.optional-dependencies]
 # The published sandbox SDK, which `serve`, `setup`, `template build` and `check` drive. The
 # base image installs the runner without it (the harness needs only the schemas).
-sandbox = ["clovelly @ https://github.com/clovelly-io/clovelly/archive/refs/tags/v0.6.0.tar.gz#subdirectory=sdks/python"]
+sandbox = ["clovelly @ https://github.com/clovelly-io/clovelly/archive/refs/tags/v0.7.0.tar.gz#subdirectory=sdks/python"]
 
 [project.scripts]
 clovelly-watch-runner = "clovelly_watch_runner.__main__:main"
